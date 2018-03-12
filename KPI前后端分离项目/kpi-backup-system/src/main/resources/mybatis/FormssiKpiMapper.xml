@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.formssi.dao.FormssiKpiDao">
+	<sql id="Base_Column_List" >
+    ID, MEMBER_NAME, RANK, STAFF_ID, SORT_SIGN, EXTRA_WORK, NORMAL_WORK, PROGRAM_SERIAL_NUM , PROGRAM_NAME , DATE , YEAR , MONTH , VERSION , MEMBER_ID,DEPARTMENT	,WORK_TYPE,VERSION2
+  </sql>
+  <sql id="Save_Column_List" >
+    MEMBER_NAME, RANK, STAFF_ID, SORT_SIGN, EXTRA_WORK, NORMAL_WORK, PROGRAM_SERIAL_NUM , PROGRAM_NAME , DATE , YEAR , MONTH , VERSION , MEMBER_ID,DEPARTMENT	,WORK_TYPE,VERSION2
+  </sql>
+	<select id="get" resultType="com.formssi.bean.FormssiKpi">
+		select
+		<include refid="Base_Column_List" />
+		from formssi_kpi
+		<where>
+		    member_name = #{memberName} and date = #{date} and department=#{department}
+		    <if test="extraWork != null and extraWork != ''">and extra_work is not null</if>
+		</where>
+	</select>
+
+	<select id="list" resultType="com.formssi.bean.FormssiKpi">
+		select
+		<include refid="Base_Column_List" />
+		from formssi_kpi
+		<where>
+			<if test="memberName != null and memberName != ''"> and member_name = #{memberName} </if>
+			<if test="department != null and department != ''"> and department = #{department} </if>
+			<if test="year != null and year != ''"> and year = #{year} </if>
+			<if test="month != null and month != ''"> and month = #{month} </if>
+			<if test="workType != null and workType != ''"> and work_type &lt;&gt; #{workType} </if>
+		</where>
+		order by member_id asc,date asc
+	</select>
+	
+	<select id="getAllNotLeftData" resultType="com.formssi.bean.FormssiKpi">
+		select
+		<include refid="Base_Column_List" />
+		from formssi_kpi
+		<where>
+			<if test="department != null and department != ''"> and department = #{department} </if>
+			<if test="year != null and year != ''"> and year = #{year} </if>
+			<if test="month != null and month != ''"> and month = #{month} </if>
+			and work_type not in('NotEntry','HaveLeft')
+		</where>
+		order by member_id asc,date asc
+	</select>
+	
+	<select id="getKpiData" resultType="com.formssi.bean.KpiData">
+		select rank,sum(normal_work) as normal,sum(extra_work) as extra from formssi_kpi
+		<where>
+			<if test="department != null and department != ''"> and department = #{department} </if>
+			<if test="year != null and year != ''"> and year = #{year} </if>
+			<if test="month != null and month != ''"> and month = #{month} </if>
+		</where>
+		  and work_type in('NormalWork','ExtraWork') group by rank;
+	</select>
+	
+	<select id="getPersonalKpi" resultType="double">
+		select ifnull(sum(case when extra_work is null then normal_work=0 else extra_work end),0) - 
+		ifnull(sum(case when work_type in ('Leave','NotEntry','HaveLeft') then normal_work end),0) as kpi 
+		from formssi_kpi
+		<where>
+			<if test="memberName != null and memberName != ''"> and member_name = #{memberName} </if>
+			<if test="year != null and year != ''"> and year = #{year} </if>
+			<if test="month != null and month != ''"> and month = #{month} </if>
+			<if test="department != null and department != ''"> and department = #{department} </if>
+		</where>
+	</select>
+
+	<insert id="save" parameterType="com.formssi.bean.FormssiKpi" useGeneratedKeys="true" keyProperty="id">
+		insert into formssi_kpi
+     <trim prefix="(" suffix=")" >
+         <include refid="Save_Column_List" />
+     </trim>
+		values
+		(
+		 #{memberName}, 
+	     #{rank},
+	     #{sortSign}, 
+	     #{staffId},
+	     #{extraWork},
+	     #{normalWork},
+	     #{programSerialNum},
+	     #{programName},
+	     #{date},
+	     #{year},
+	     #{month},
+	     #{version},
+	     #{memberId},
+	     #{department},
+	     #{workType},
+	     #{version2}
+	    ) 
+	</insert>
+	
+	<insert id="batchImport" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		insert into formssi_kpi
+		<trim prefix="(" suffix=")" >
+       		<include refid="Save_Column_List" />
+   		</trim>
+		values
+		<foreach collection="list" item="formssiKpi" index="index"  
+            separator=",">  
+	      (
+	         #{formssiKpi.memberName}, 
+		     #{formssiKpi.rank},
+		     #{formssiKpi.sortSign}, 
+		     #{formssiKpi.staffId},
+		     #{formssiKpi.extraWork},
+		     #{formssiKpi.normalWork},
+		     #{formssiKpi.programSerialNum},
+		     #{formssiKpi.programName},
+		     #{formssiKpi.date},
+		     #{formssiKpi.year},
+		     #{formssiKpi.month},
+		     #{formssiKpi.version},
+		     #{formssiKpi.memberId},
+		     #{formssiKpi.department},
+		     #{formssiKpi.workType},
+		     #{formssiKpi.version2}
+		     )   
+	  </foreach> 
+	</insert>
+	
+	<update id="update" parameterType="com.formssi.bean.FormssiKpi">
+		update formssi_kpi
+		<set>
+			<if test="extraWork != null and extraWork != ''"> extra_work = #{extraWork}, </if>
+			<if test="normalWork != null and normalWork != ''"> normal_work = #{normalWork}, </if>
+			<if test="version != null and version != ''"> version = version+1 </if>
+		</set>
+		<where>
+			<if test="workType != null and workType != ''"> work_type = #{workType} and </if>
+			<if test="version != null and version != ''"> version = #{version} and </if>
+			<if test="date != null and date != ''"> date = #{date} and </if>
+			<if test="memberName != null and memberName != ''"> member_name = #{memberName} and</if>
+			<if test="department != null and department != ''"> department = #{department} </if>
+		</where>
+	</update>
+	
+	<update id="updateNoLock" parameterType="com.formssi.bean.FormssiKpi">
+		update formssi_kpi
+		<set>
+			<if test="extraWork != null"> extra_work = #{extraWork}, </if>
+			<if test="normalWork != null"> normal_work = #{normalWork}, </if>
+			<if test="version2 != null and version2 != ''"> version2 = version2+1 </if>
+		</set>
+		<where>
+			<if test="workType != null and workType != ''"> work_type = #{workType} and </if>
+			<if test="date != null and date != ''"> date = #{date} and </if>
+			<if test="version2 != null and version2 != ''"> version2 = #{version2} and</if>
+			<if test="memberName != null and memberName != ''"> member_name = #{memberName} and</if>
+			<if test="department != null and department != ''"> department = #{department}</if>
+		</where>
+	</update>
+	
+	<delete id="remove" parameterType="com.formssi.bean.FormssiKpi">
+		delete from formssi_kpi
+		<where>
+		    <if test="date != null and date != ''"> and date = #{date}</if>
+		    <if test="memberName != null and memberName != ''"> and member_name = #{memberName}</if>
+		    <if test="workType != null and workType != ''"> and work_type != #{workType}</if>
+		</where>
+	</delete>
+	
+	<delete id="removeNotNormal" parameterType="com.formssi.bean.FormssiKpi">
+		delete from formssi_kpi where work_type &lt;&gt; 'NormalWork' and member_name = #{memberName} and date = #{date} and department=#{department}
+	</delete>
+	
+	<update id="updateBatch" parameterType="java.util.List">
+        update formssi_kpi
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="extra_work =case" suffix="end,">
+                 <foreach collection="list" item="formssiKpi" index="index">
+                 	<if test="formssiKpi.extraWork != null and formssiKpi.extraWork != ''">
+                 		when date=#{formssiKpi.date} and department=#{formssiKpi.department} and member_name=#{formssiKpi.memberName} and program_serial_num=#{formssiKpi.programSerialNum} and work_type=#{formssiKpi.workType} and version=#{formssiKpi.version} then #{formssiKpi.extraWork}
+                 	</if>
+                 	<if test="formssiKpi.extraWork == null and formssiKpi.extraWork == ''">
+                 		when date=#{formssiKpi.date} and department=#{formssiKpi.department} and member_name=#{formssiKpi.memberName} and program_serial_num=#{formssiKpi.programSerialNum} and work_type=#{formssiKpi.workType} and version=#{formssiKpi.version} then formssi_kpi.extra_work
+                 	</if>
+                 </foreach>
+            </trim>
+             <trim prefix="normal_work =case" suffix="end,">
+                 <foreach collection="list" item="formssiKpi" index="index">
+                 	<if test="formssiKpi.normalWork != null and formssiKpi.normalWork != ''">
+                 		when date=#{formssiKpi.date} and department=#{formssiKpi.department} and member_name=#{formssiKpi.memberName} and program_serial_num=#{formssiKpi.programSerialNum} and work_type=#{formssiKpi.workType} and version=#{formssiKpi.version} then #{formssiKpi.normalWork}
+                 	</if>
+                 	<if test="formssiKpi.normalWork == null and formssiKpi.normalWork == ''">
+                 		when date=#{formssiKpi.date} and department=#{formssiKpi.department} and member_name=#{formssiKpi.memberName} and program_serial_num=#{formssiKpi.programSerialNum} and work_type=#{formssiKpi.workType} and version=#{formssiKpi.version} then formssi_kpi.normal_work
+                 	</if>
+                 </foreach>
+            </trim>
+        </trim>
+        where date in
+        <foreach collection="list" index="index" item="formssiKpi" separator="," open="(" close=")">
+            #{formssiKpi.date}
+        </foreach>
+        and department in
+        <foreach collection="list" index="index" item="formssiKpi" separator="," open="(" close=")">
+        	#{formssiKpi.department}
+        </foreach>
+        and work_type in
+        <foreach collection="list" index="index" item="formssiKpi" separator="," open="(" close=")">
+        	#{formssiKpi.workType}
+        </foreach>
+        and member_name in
+        <foreach collection="list" index="index" item="formssiKpi" separator="," open="(" close=")">
+        	#{formssiKpi.memberName}
+        </foreach>
+    </update>
+
+	<delete id="batchRemove">
+		delete from formssi_kpi where date in
+    	<foreach item="formssiKpi" collection="list" open="(" separator="," close=")">
+            #{formssiKpi.date} 
+        </foreach>
+        and department in
+        <foreach collection="list" index="index" item="formssiKpi" separator="," open="(" close=")">
+        	#{formssiKpi.department}
+        </foreach>
+        and work_type in
+        <foreach collection="list" index="index" item="formssiKpi" separator="," open="(" close=")">
+        	#{formssiKpi.workType}
+        </foreach>
+        and member_name in
+        <foreach collection="list" index="index" item="formssiKpi" separator="," open="(" close=")">
+        	#{formssiKpi.memberName}
+        </foreach>
+	</delete>
+	
+	
+</mapper>

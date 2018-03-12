@@ -1,0 +1,5 @@
+2018-01-30 11:58:00.077 [Thread-516] INFO  o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext -Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@28f77981: startup date [Tue Jan 30 11:54:08 CST 2018]; root of context hierarchy
+2018-01-30 11:58:00.112 [Thread-516] INFO  o.s.c.s.DefaultLifecycleProcessor -Stopping beans in phase 2147483647
+2018-01-30 11:58:00.118 [Thread-516] INFO  o.s.j.e.a.AnnotationMBeanExporter -Unregistering JMX-exposed beans on shutdown
+2018-01-30 11:58:00.127 [Thread-516] INFO  o.s.j.e.a.AnnotationMBeanExporter -Unregistering JMX-exposed beans
+2018-01-30 11:58:00.178 [Thread-516] INFO  c.alibaba.druid.pool.DruidDataSource -{dataSource-59} closed

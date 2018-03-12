@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.formssi.dao.AccountDao">
+
+	<sql id="Base_Column_List" >
+    		ACCOUNT_ID, ACCOUNT_NAME, PASSWORD,EMAIL	
+  	</sql>
+  	<sql id="Save_Column_List" >
+    	ACCOUNT_NAME, PASSWORD,CREATE_TIME,MODIFY_TIME,EMAIL
+  	</sql>
+	<select id="getAccount" resultType="com.formssi.bean.Account">
+		select
+		<include refid="Base_Column_List" />
+		from formssi_account where account_name = #{accountName}
+	</select>
+	
+	<insert id="saveAccount" parameterType="com.formssi.bean.Account"
+		useGeneratedKeys="true" keyProperty="accountId">
+		insert into formssi_account
+		<trim prefix="(" suffix=")" >
+         <include refid="Save_Column_List" />
+     </trim>
+     <trim prefix="values (" suffix=")" suffixOverrides="," >
+		#{accountName},#{password},now(),now(),#{email}
+	 </trim>
+	</insert>
+
+	<update id="updateAccount" parameterType="com.formssi.bean.Account">
+		update formssi_account
+		<set>
+			<if test="accountName != null and accountName != ''">`account_name` = #{accountName}, </if>
+			<if test="password != null and password != ''">`password` = #{password}, </if>
+			<if test="email != null and email != ''">`email` = #{email} </if>
+		</set>
+		where `account_name` = #{accountName}
+	</update>
+
+	<select id="countAccount" resultType="int">
+		select count(*) from formssi_account where  account_name = #{accountName}
+	</select>
+</mapper>

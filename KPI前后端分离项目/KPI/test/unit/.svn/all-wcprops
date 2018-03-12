@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/maven/!svn/ver/68/sp_frontWeb/test/unit
+END
+.eslintrc
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/maven/!svn/ver/68/sp_frontWeb/test/unit/.eslintrc
+END
+index.js
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/maven/!svn/ver/68/sp_frontWeb/test/unit/index.js
+END
+karma.conf.js
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/maven/!svn/ver/68/sp_frontWeb/test/unit/karma.conf.js
+END

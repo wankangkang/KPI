@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.formssi.dao.KpiBalanceDao">
+
+	<sql id="Base_Column_List" >
+    		KPI_BALANCE_ID,	MEMBER_ID,KPI_BALANCE,MEMBER_NAME,DEPARTMENT
+  	</sql>
+  	<sql id="Save_Column_List" >
+    	MEMBER_ID,KPI_BALANCE,MEMBER_NAME,DEPARTMENT
+  	</sql>
+	<select id="getKpiBalanceInfoList" resultType="com.formssi.bean.KpiBalanceInfo">
+		select
+		<include refid="Base_Column_List" />
+		from formssi_kpi_balance where department = #{department}
+	</select>
+	
+	<select id="getKpiBalanceInfo" resultType="com.formssi.bean.KpiBalanceInfo">
+		select
+		<include refid="Base_Column_List" />
+		from formssi_kpi_balance where member_id = #{memberId}
+	</select>
+	
+	<insert id="saveKpiBalanceInfo" parameterType="com.formssi.bean.KpiBalanceInfo"
+		useGeneratedKeys="true" keyProperty="kpiBalanceId">
+		insert into formssi_kpi_balance
+		<trim prefix="(" suffix=")" >
+         <include refid="Save_Column_List" />
+     </trim>
+     <trim prefix="values (" suffix=")" suffixOverrides="," >
+		#{memberId},#{kpiBalance},#{memberName},#{department}
+	 </trim>
+	</insert>
+
+	<update id="updateKpiBalanceInfo" parameterType="com.formssi.bean.KpiBalanceInfo">
+		update formssi_kpi_balance
+		<set>
+			<if test="memberId != null and memberId != ''">`member_id` = #{memberId}, </if>
+			<if test="kpiBalance != null and kpiBalance != ''">`kpi_balance` = #{kpiBalance}, </if>
+			<if test="memberName != null and memberName != ''">`member_name` = #{memberName} </if>
+		</set>
+		where `member_id` = #{memberId}
+	</update>
+	
+	<update id="batchUpdate" parameterType="java.util.List">
+		update formssi_kpi_balance
+		<trim prefix="set" suffixOverrides=",">
+            <trim prefix="kpi_balance =case" suffix="end,">
+                 <foreach collection="list" item="kpiBalanceInfo" index="index">
+                 	<if test="kpiBalanceInfo.kpiBalance != null and kpiBalanceInfo.kpiBalance != ''">
+                 		when member_id=#{kpiBalanceInfo.memberId} then #{kpiBalanceInfo.kpiBalance}
+                 	</if>
+                 </foreach>
+            </trim>
+        </trim>
+	</update>
+	
+	<delete id="deleteKpiBalanceInfo">
+		delete from formssi_kpi_balance where member_id = #{memberId}
+	</delete>
+</mapper>

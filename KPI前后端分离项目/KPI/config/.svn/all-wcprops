@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/maven/!svn/ver/68/sp_frontWeb/config
+END
+dev.env.js
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/maven/!svn/ver/68/sp_frontWeb/config/dev.env.js
+END
+test.env.js
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/maven/!svn/ver/68/sp_frontWeb/config/test.env.js
+END
+index.js
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/maven/!svn/ver/68/sp_frontWeb/config/index.js
+END
+prod.env.js
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/maven/!svn/ver/68/sp_frontWeb/config/prod.env.js
+END

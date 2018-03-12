@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.formssi.dao.KpiStyleDao">
+
+	<sql id="Base_Column_List" >
+    		STYLE_ID, DEPARTMENT,PROGRAM_SERIAL_NUM_PREFIX,PROGRAM_NAME_PREFIX	
+  	</sql>
+  	<sql id="Save_Column_List" >
+    		DEPARTMENT,PROGRAM_SERIAL_NUM_PREFIX,PROGRAM_NAME_PREFIX,CREATE_TIME,MODIFY_TIME	
+  	</sql>
+	<select id="getKpiStyle" resultType="com.formssi.bean.KpiStyle">
+		select
+		<include refid="Base_Column_List" />
+		from formssi_kpi_style where department = #{department}
+	</select>
+	
+	<insert id="saveKpiStyle" parameterType="com.formssi.bean.KpiStyle"
+		useGeneratedKeys="true" keyProperty="styleId">
+		insert into formssi_kpi_style
+		<trim prefix="(" suffix=")" >
+         <include refid="Save_Column_List" />
+     </trim>
+     <trim prefix="values (" suffix=")" suffixOverrides="," >
+		#{department},#{programSerialNumPrefix},#{programNamePrefix},now(),now()
+	 </trim>
+	</insert>
+
+	<update id="updateKpiStyle" parameterType="com.formssi.bean.KpiStyle">
+		update formssi_kpi_style
+		<set>
+			<if test="programSerialNumPrefix != null and programSerialNumPrefix != ''">`program_serial_num_prefix` = #{programSerialNumPrefix}, </if>
+			<if test="programNamePrefix != null and programNamePrefix != ''">`program_name_prefix` = #{programNamePrefix}, </if>
+			`modify_time` = now()
+		</set>
+		where `department` = #{department}
+	</update>
+	
+</mapper>

@@ -1,0 +1,47 @@
+{
+  "name": "soshm",
+  "version": "1.1.3",
+  "description": "Social Share For Mobile",
+  "author": {
+    "name": "calledt",
+    "email": "huanggengtao@gmail.com",
+    "url": "calledt.com"
+  },
+  "repository": "https://github.com/calledT/soshm",
+  "license": "MIT",
+  "main": "dist/soshm.js",
+  "scripts": {
+    "package": "webpack",
+    "minify": "uglifyjs --mangle --compress -o ./dist/soshm.min.js ./dist/soshm.js",
+    "build": "npm run package && npm run minify"
+  },
+  "keywords": [
+    "share",
+    "socialshare",
+    "nativeshare",
+    "weixin",
+    "qq",
+    "weibo",
+    "qzone"
+  ],
+  "devDependencies": {
+    "autoprefixer": "^6.4.1",
+    "css-loader": "^0.25.0",
+    "file-loader": "^0.9.0",
+    "node-sass": "^3.10.0",
+    "postcss-loader": "^0.13.0",
+    "sass-loader": "^4.0.2",
+    "style-loader": "^0.13.1",
+    "uglify-js": "^2.7.3",
+    "url-loader": "^0.5.7",
+    "webpack": "^1.13.2"
+  },
+  "dependencies": {
+    "delegate": "^3.0.2",
+    "xtend": "^4.0.1"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ]
+}

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.formssi.dao.HolidayDao">
+	<sql id="Base_Column_List" >
+    	HOLIDAY_ID,HOLIDAY_TYPE, HOLIDAY_DATE , YEAR , MONTH,TITLE,VACATION	
+  	</sql>
+  	<sql id="Save_Column_List" >
+    	HOLIDAY_TYPE, HOLIDAY_DATE , YEAR , MONTH,TITLE,VACATION
+  	</sql>
+
+	<select id="getHolidayList" resultType="com.formssi.bean.Holiday">
+		select
+		<include refid="Base_Column_List" />
+		from holiday
+		<where>
+			<if test="year != null and year != ''"> and year = #{year} </if>
+			<if test="month != null and month != ''"> and month = #{month} </if>
+		</where>
+	</select>
+	
+	<insert id="batchImportHoliday" parameterType="java.util.List" 
+		useGeneratedKeys="true" keyProperty="holidayId" keyColumn="holiday_id">
+		insert into holiday
+		<trim prefix="(" suffix=")" >
+       <include refid="Save_Column_List" />
+   	</trim>
+		values
+		<foreach collection="list" item="holiday" index="index"  
+            separator=",">  
+	       (
+	       	 #{holiday.holidayType}, 
+		     #{holiday.holidayDate},
+		     #{holiday.year},
+		     #{holiday.month},
+		     #{holiday.title},
+		     #(holiday.vacation)
+		   )
+	  </foreach> 
+	</insert>
+
+	<delete id="deleteHoliday">
+		delete from holiday
+		<where>
+		    <if test="year != null and year != ''">year = #{year}</if>
+		    <if test="month != null and month != ''"> and month = #{month}</if>
+		</where>
+	</delete>
+	
+</mapper>

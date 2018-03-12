@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.formssi.dao.MemberDao">
+
+	<sql id="Base_Column_List" >
+    		MEMBER_ID, MEMBERNAME, RANK, DEPARTMENT	
+  	</sql>
+  	<sql id="Save_Column_List" >
+    	MEMBERNAME, RANK,DEPARTMENT,CREATE_TIME,MODIFY_TIME
+  	</sql>
+	<select id="getMember" resultType="com.formssi.bean.Member">
+		select
+		<include refid="Base_Column_List" />
+		from formssi_member where member_id = #{memberId}
+	</select>
+	
+	<insert id="saveMember" parameterType="com.formssi.bean.Member"
+		useGeneratedKeys="true" keyProperty="memberId">
+		insert into formssi_member
+		<trim prefix="(" suffix=")" >
+         <include refid="Save_Column_List" />
+     </trim>
+     <trim prefix="values (" suffix=")" suffixOverrides="," >
+		#{memberName},#{rank},#{department},now(),now()
+	 </trim>
+	</insert>
+
+	<update id="updateAllMember" parameterType="java.util.List">
+		update formssi_member
+		<trim prefix="set" suffixOverrides=",">
+            <trim prefix="rank =case" suffix="end,">
+                 <foreach collection="list" item="member" index="index">
+                 	<if test="member.rank != null and member.rank != ''">
+                 		when member_id=#{member.memberId} then #{member.rank}
+                 	</if>
+                 </foreach>
+            </trim>
+        </trim>
+        where member_id in
+        <foreach collection="list" index="index" item="member" separator="," open="(" close=")">
+            #{member.memberId}
+        </foreach>
+	</update>
+
+	<select id="count" resultType="int">
+		select count(*) from formssi_member where  membername = #{membername}
+	</select>
+	<delete id="deleteMember">
+		delete from formssi_member where `member_id` = #{memberId}
+	</delete>
+
+	<delete id="batchRemove">
+		delete from formssi_member where member_id in
+		<foreach item="memberId" collection="array" open="(" separator=","
+			close=")">
+			#{memberId}
+		</foreach>
+	</delete>
+	
+	<select id="list" resultType="com.formssi.bean.Member">
+		select
+		<include refid="Base_Column_List" />
+		from formssi_member
+		<where>
+			<if test="memberId != null and memberId != ''"> and member_id = #{memberId} </if>
+			<if test="memberName != null and memberName != ''"> and membername = #{memberName} </if>
+			<if test="rank != null and rank != ''"> and rank = #{rank} </if>
+			<if test="department != null and department != ''"> and department = #{department} </if>
+		</where>
+		<choose>
+			<when test="sort != null and sort.trim() != ''">
+				order by ${sort} ${order}
+			</when>
+			<otherwise>
+				order by member_id asc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+</mapper>

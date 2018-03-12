@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.formssi.dao.ImportFlagDao">
+	<sql id="Base_Column_List" >
+    	IMPORT_FLAG, IMPORT_TIME, YEAR,MONTH,DEPARTMENT
+    </sql>
+	<insert id="saveFlag" parameterType="com.formssi.bean.ImportFlag"
+	useGeneratedKeys="true" keyProperty="flagId">
+    insert into formssi_import_flag
+    <trim prefix="(" suffix=")" >
+   		<include refid="Base_Column_List" />
+	</trim>
+   	values(
+   		#{importFlag},#{importTime},#{year},#{month},#{department}
+   	)
+	</insert>
+	
+	<select id="count" resultType="int" parameterType="java.lang.Integer">
+		select count(*) from formssi_import_flag
+		<where>
+			<if test="flagId != null and flagId != ''"> and flag_id = #{flagId} </if>
+			<if test="importFlag != null and importFlag != ''"> and import_flag = #{importFlag} </if>
+			<if test="importTime != null and importTime != ''"> and import_time = #{importTime} </if>
+			<if test="year != null and year != ''"> and year = #{year} </if>
+			<if test="month != null and month != ''"> and month = #{month} </if>
+			<if test="department != null and department != ''"> and department = #{department} </if>
+		</where>
+	</select>
+	
+</mapper>
